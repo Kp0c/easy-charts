@@ -1,0 +1,6 @@
+@import '../../styles/common.css';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}

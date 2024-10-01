@@ -12,9 +12,11 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
 ## Project structure
 - `components` - Project is using component-based approach with custom elements. Components are using `ec-` prefix that means "easy charts."
     - The `ec-app` component is the main component containing the whole app, routing logic and app state.
+    - The `ec-header` component for the header
 - `styles` - additional styles
     - `common` - styles that are common for the app and most likely needed in most/all components
 - `main.js` - file defines all components
+- `main.css` - main css file that defines some top-level styles
 
 ## Available functionality
 

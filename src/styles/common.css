@@ -7,3 +7,32 @@
 :host {
   display: block;
 }
+
+:root {
+  color-scheme: light dark;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background-color: light-dark(#F1F1F1, #003366);
+  color: light-dark(#000, #F1F1F1);
+}
+
+h1, h2 {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 32px;
+  color: light-dark(#003366, #F1F1F1);
+}
+
+.icon-button {
+  border: 0;
+  background-color: transparent;
+  color: light-dark(#003366, #F1F1F1);
+
+  > svg {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+}

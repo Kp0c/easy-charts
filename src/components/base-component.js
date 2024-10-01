@@ -21,4 +21,8 @@ export class BaseComponent extends HTMLElement {
     shadow.appendChild(style);
     shadow.appendChild(templateElement.content.cloneNode(true));
   }
+
+  disconnectedCallback() {
+    this.#destroyController.abort();
+  }
 }
