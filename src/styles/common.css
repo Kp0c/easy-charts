@@ -14,8 +14,8 @@
 }
 
 body {
-  background-color: light-dark(#F1F1F1, #003366);
-  color: light-dark(#000, #F1F1F1);
+  background-color: light-dark(#F1F1F1, #121212);
+  color: light-dark(#000, #FFF);
 }
 
 h1, h2 {
@@ -35,4 +35,17 @@ h1, h2 {
     height: 24px;
     cursor: pointer;
   }
+}
+
+button {
+  border: 0;
+  background-color: light-dark(#003366, #F1F1F1);
+  color: light-dark(#F1F1F1, #003366);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+p {
+  margin: 0;
 }

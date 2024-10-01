@@ -1,0 +1,57 @@
+@import '../../styles/common.css';
+
+.upload-container {
+  margin: 20px auto;
+  width: 350px;
+  height: 200px;
+  border: 2px dashed #0056A2;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: light-dark(#F1F1F1, #003366);
+
+  h2 {
+    font-size: 1.5rem;
+    color: light-dark(#000, #F1F1F1);
+    margin: 0;
+  }
+}
+
+.upload-container:hover {
+  border-color: #FFD700;
+  border-style: solid;
+}
+
+.file-input {
+  margin-top: 16px;
+}
+
+.supported-formats {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: light-dark(#0056A2, #F1F1F1);
+}
+
+.manual-entry {
+  margin: 30px auto 0;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+
+  textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #0056A2;
+    resize: none;
+  }
+
+}
+
