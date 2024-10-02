@@ -8,6 +8,7 @@ export class Chart extends BaseComponent {
   #xLabel = this.shadowRoot.getElementById('x-label');
   #yLabel = this.shadowRoot.getElementById('y-label');
   #exportChart = this.shadowRoot.getElementById('export-chart');
+  #print = this.shadowRoot.getElementById('print');
   #ctx = this.#chart.getContext('2d');
 
   #theme = 'light';
@@ -35,6 +36,10 @@ export class Chart extends BaseComponent {
     observer.observe(document.body, {
       attributes: true,
       attributeFilter: ['style'],
+    });
+
+    this.destroyedSignal.addEventListener('abort', () => {
+      observer.disconnect();
     });
 
     this.#exportChart.addEventListener('click', (event) => {
@@ -70,6 +75,14 @@ export class Chart extends BaseComponent {
         default:
           showError('Invalid export type');
       }
+    }, {
+      signal: this.destroySignal
+    });
+
+    this.#print.addEventListener('click', () => {
+      window.print();
+    }, {
+      signal: this.destroySignal
     });
   }
 
