@@ -11,13 +11,13 @@ export class ChartData {
    * Keys that contain the number
    * @type {string[]}
    */
-  #numericKeys = [];
+  numericKeys = [];
 
   /**
    * Keys that contain the string
    * @type {string[]}
    */
-  #stringKeys = [];
+  stringKeys = [];
 
   /**
    * Errors
@@ -53,9 +53,9 @@ export class ChartData {
     // gather all the keys of the first object as an example
     for (const key of keys) {
       if (typeof data[0][key] === 'number') {
-        this.#numericKeys.push(key);
+        this.numericKeys.push(key);
       } else if (typeof data[0][key] === 'string') {
-        this.#stringKeys.push(key);
+        this.stringKeys.push(key);
       }
     }
 

@@ -17,6 +17,7 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
     - The `ec-alerts` component for the alerts section
     - The `ec-data-preview` component to preview data
     - The `ec-data-errors` component to preview data errors
+    - The `ec-chart` component to display the chart
   - `base-component.js` - Base component that is used as a base for all components
 - `helpers` - Helper classes
     - `observable` - Observable implementation to add reactivity to the app
@@ -31,6 +32,10 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
 - `main.css` - main css file that defines some top-level styles
 
 ## Available functionality
+- Theming
+- Read CSV/Excel/JSON and validate them
+- Preview data in the table format
+- Generate Bar/Line/Pie Charts
 
 ## How to run
 1. Clone the repo
