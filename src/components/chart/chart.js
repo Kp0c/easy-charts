@@ -7,6 +7,7 @@ export class Chart extends BaseComponent {
   #chart = this.shadowRoot.getElementById('chart');
   #xLabel = this.shadowRoot.getElementById('x-label');
   #yLabel = this.shadowRoot.getElementById('y-label');
+  #exportChart = this.shadowRoot.getElementById('export-chart');
   #ctx = this.#chart.getContext('2d');
 
   #theme = 'light';
@@ -23,23 +24,8 @@ export class Chart extends BaseComponent {
 
   constructor() {
     super(template, styles);
-  }
 
-  /**
-   *
-   * @param {ChartData} chartData
-   * @param {'bar' | 'line' | 'pie'} chartType
-   */
-  setup(chartData, chartType) {
-    this.#chartData = chartData;
-    this.#chartType = chartType;
-
-    // get from color-scheme style
     this.#theme = getComputedStyle(document.body).getPropertyValue('color-scheme');
-
-    this.#populateControls();
-
-    this.#drawChart();
 
     const observer = new MutationObserver(() => {
       this.#theme = getComputedStyle(document.body).getPropertyValue('color-scheme');
@@ -51,6 +37,54 @@ export class Chart extends BaseComponent {
       attributeFilter: ['style'],
     });
 
+    this.#exportChart.addEventListener('click', (event) => {
+      const type = event.target.dataset.export;
+
+      switch (type) {
+        case 'png': {
+          const link = document.createElement('a');
+          link.download = 'chart.png';
+          link.href = this.#chart.toDataURL('image/png');
+          link.click();
+          break;
+        }
+        case 'svg': {
+          const dataURL = this.#chart.toDataURL('image/png');
+          const backgroundColor = this.#theme === 'light' ? 'white' : 'black';
+          const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${ this.#chart.width }" height="${ this.#chart.height }">
+            <rect width="100%" height="100%" fill="${backgroundColor}" />
+            <image href="${ dataURL }" width="${ this.#chart.width }" height="${ this.#chart.height }" />
+        </svg>`;
+          const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'chart.svg';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          break;
+        }
+        default:
+          showError('Invalid export type');
+      }
+    });
+  }
+
+  /**
+   *
+   * @param {ChartData} chartData
+   * @param {'bar' | 'line' | 'pie'} chartType
+   */
+  setup(chartData, chartType) {
+    this.#chartData = chartData;
+    this.#chartType = chartType;
+
+    this.#populateControls();
+
+    this.#drawChart();
   }
 
   #drawChart() {

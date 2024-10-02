@@ -36,6 +36,7 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
 - Read CSV/Excel/JSON and validate them
 - Preview data in the table format
 - Generate Bar/Line/Pie Charts
+- Export as PNG/SVG
 
 ## How to run
 1. Clone the repo
