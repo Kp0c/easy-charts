@@ -120,39 +120,39 @@ export class Chart extends BaseComponent {
   }
 
   #drawBarChart() {
+    const groupedData = this.#getGroupedData();
+
     const ctx = this.#ctx;
     const chartWidth = this.#chart.width;
     const chartHeight = this.#chart.height;
     const leftPadding = 30;
-    const barWidth = (chartWidth - leftPadding) / this.#chartData.chartData.length;
+    const barWidth = (chartWidth - leftPadding) / Object.keys(groupedData).length;
     const topPadding = 20;
     const bottomPadding = 20;
 
     ctx.clearRect(0, 0, chartWidth, chartHeight);
 
     // Draw the bars
-    const maxDataValue = Math.max(...this.#chartData.chartData.map(d => d.data[this.#y]));
-    this.#chartData.chartData.forEach((item, index) => {
-      if (item.isValid) {
-        const dataValue = item.data[this.#y];
-        const barHeight = (dataValue / maxDataValue) * (chartHeight - topPadding - bottomPadding);
+    const maxDataValue = Math.max(...Object.values(groupedData));
+    Object.entries(groupedData).forEach(([key, value], index) => {
+      const dataValue = value;
+      const barHeight = (dataValue / maxDataValue) * (chartHeight - topPadding - bottomPadding);
 
-        const xPos = leftPadding + index * barWidth;
-        const yPos = chartHeight - barHeight - bottomPadding;
+      const xPos = leftPadding + index * barWidth;
+      const yPos = chartHeight - barHeight - bottomPadding;
 
-        ctx.fillStyle = this.#theme === 'light' ? 'blue' : 'white';
-        ctx.fillRect(xPos, yPos, barWidth - 2, barHeight);
+      ctx.fillStyle = this.#theme === 'light' ? 'blue' : 'white';
+      ctx.fillRect(xPos, yPos, barWidth - 2, barHeight);
 
-        // Draw x-axis labels
-        ctx.fillStyle = this.#theme === 'light' ? 'white' : 'black';
-        ctx.textAlign = 'center';
-        ctx.fillText(item.data[this.#x], xPos + barWidth / 2, chartHeight - 5 - bottomPadding);
+      // Draw x-axis labels
+      ctx.fillStyle = this.#theme === 'light' ? 'white' : 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText(key, xPos + barWidth / 2, chartHeight - 5 - bottomPadding);
 
-        // Draw y-axis values on top of each bar
-        ctx.fillStyle = this.#theme === 'light' ? 'black' : 'white';
-        ctx.textAlign = 'center';
-        ctx.fillText(dataValue, xPos + barWidth / 2, yPos - 5);
-      }
+      // Draw y-axis values on top of each bar
+      ctx.fillStyle = this.#theme === 'light' ? 'black' : 'white';
+      ctx.textAlign = 'center';
+      ctx.fillText(dataValue, xPos + barWidth / 2, yPos - 5);
     });
 
     // draw Y label
@@ -173,6 +173,7 @@ export class Chart extends BaseComponent {
   }
 
   #drawLineChart() {
+    const groupedData = this.#getGroupedData();
     const ctx = this.#ctx;
     const chartWidth = this.#chart.width;
     const chartHeight = this.#chart.height;
@@ -182,19 +183,14 @@ export class Chart extends BaseComponent {
 
     ctx.clearRect(0, 0, chartWidth, chartHeight);
 
-    // Prepare data points
-    const maxDataValue = Math.max(...this.#chartData.chartData.map(d => d.data[this.#y]));
-    const points = this.#chartData.chartData
-      .map((item, index) => {
-        if (item.isValid) {
-          const dataValue = item.data[this.#y];
-          const xPos = leftPadding + (index * (chartWidth - leftPadding)) / this.#chartData.chartData.length;
-          const yPos = chartHeight - ((dataValue / maxDataValue) * (chartHeight - topPadding - bottomPadding)) - bottomPadding;
-          return { x: xPos, y: yPos, value: dataValue }; // Store the data value here
-        }
-        return null;
-      })
-      .filter(point => point !== null);
+    const maxDataValue = Math.max(...Object.values(groupedData));
+
+    const points = Object.entries(groupedData)
+      .map(([key, value], index) => {
+        const xPos = leftPadding + (index * (chartWidth - leftPadding)) / Object.keys(groupedData).length;
+        const yPos = chartHeight - ((value / maxDataValue) * (chartHeight - topPadding - bottomPadding)) - bottomPadding;
+        return { x: xPos, y: yPos, value: value }; // Store the data value here
+      });
 
     // Draw lines between points
     ctx.strokeStyle = this.#theme === 'light' ? 'blue' : 'white';
@@ -220,11 +216,9 @@ export class Chart extends BaseComponent {
     // Draw x-axis labels
     ctx.fillStyle = this.#theme === 'light' ? 'black' : 'white';
     ctx.textAlign = 'center';
-    this.#chartData.chartData.forEach((item, index) => {
-      if (item.isValid) {
-        const xPos = leftPadding + (index * (chartWidth - leftPadding)) / this.#chartData.chartData.length;
-        ctx.fillText(item.data[this.#x], xPos, chartHeight - 5 - bottomPadding);
-      }
+    Object.keys(groupedData).forEach((key, index) => {
+      const xPos = leftPadding + (index * (chartWidth - leftPadding)) / Object.keys(groupedData).length;
+      ctx.fillText(key, xPos, chartHeight - 5 - bottomPadding);
     });
 
     // Draw y-axis values on top of each data point
@@ -251,6 +245,7 @@ export class Chart extends BaseComponent {
   }
 
   #drawPieChart() {
+    const groupedData = this.#getGroupedData();
     const ctx = this.#ctx;
     const chartWidth = this.#chart.width;
     const chartHeight = this.#chart.height;
@@ -262,45 +257,36 @@ export class Chart extends BaseComponent {
 
     ctx.clearRect(0, 0, chartWidth, chartHeight);
 
-    // Calculate total value for percentage
-    const totalValue = this.#chartData.chartData.reduce((sum, item) => {
-      return item.isValid ? sum + item.data[this.#y] : sum;
-    }, 0);
+    const totalValue = Object.values(groupedData).reduce((sum, value) => sum + value, 0);
 
     let startAngle = 0;
-    const legendYStart = 20; // Start Y position for legend
+    const legendYStart = 20;
 
-    // Draw each slice and prepare legend
-    this.#chartData.chartData.forEach((item, index) => {
-      if (item.isValid) {
-        const dataValue = item.data[this.#y];
-        const sliceAngle = (dataValue / totalValue) * 2 * Math.PI; // Calculate the angle for this slice
+    Object.entries(groupedData).forEach(([key, value], index) => {
+      const sliceAngle = (value / totalValue) * 2 * Math.PI;
 
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY); // Move to the center
-        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle); // Draw the slice
-        ctx.closePath();
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+      ctx.closePath();
+      ctx.fillStyle = this.#getColor(index)
+      ctx.fill();
 
-        // Fill slice with a color
-        ctx.fillStyle = this.#getColor(item); // Assuming you have a method to get colors
-        ctx.fill();
+      // Draw percentage label closer to the edge of the slice
+      const midAngle = startAngle + sliceAngle / 2;
+      const labelX = centerX + (radius - 25) * Math.cos(midAngle);
+      const labelY = centerY + (radius - 20) * Math.sin(midAngle);
+      const percentage = ((value / totalValue) * 100).toFixed(2);
+      ctx.fillStyle = 'white';
+      ctx.fillText(`${ percentage }%`, labelX, labelY);
 
-        // Draw percentage label closer to the edge of the slice
-        const midAngle = startAngle + sliceAngle / 2;
-        const labelX = centerX + (radius - 25) * Math.cos(midAngle); // Offset label closer to the edge
-        const labelY = centerY + (radius - 20) * Math.sin(midAngle);
-        const percentage = ((dataValue / totalValue) * 100).toFixed(2); // Calculate percentage
-        ctx.fillStyle = 'white'; // White text for better visibility
-        ctx.fillText(`${percentage}%`, labelX, labelY); // Draw the percentage label
+      // Draw legend
+      ctx.fillStyle = this.#getColor(index);
+      ctx.fillRect(chartWidth - 100, legendYStart + index * 20, 15, 15);
+      ctx.fillStyle = this.#theme === 'light' ? 'black' : 'white';
+      ctx.fillText(key, chartWidth - 80, legendYStart + index * 20 + 12);
 
-        // Draw legend
-        ctx.fillStyle = this.#getColor(item); // Use the same color for the legend
-        ctx.fillRect(chartWidth - 100, legendYStart + index * 20, 15, 15); // Legend box
-        ctx.fillStyle = this.#theme === 'light' ? 'black' : 'white';
-        ctx.fillText(item.data[this.#x], chartWidth - 80, legendYStart + index * 20 + 12);
-
-        startAngle += sliceAngle;
-      }
+      startAngle += sliceAngle;
     });
 
     ctx.save();
@@ -313,13 +299,10 @@ export class Chart extends BaseComponent {
     ctx.restore();
   }
 
-// Example method to return a color based on item
-  #getColor(item) {
+  #getColor(index) {
     const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
-    return colors[this.#chartData.chartData.indexOf(item) % colors.length]; // Cycle through colors
+    return colors[index % colors.length];
   }
-
-
 
   #populateControls() {
     this.#xLabel.innerHTML = '';
@@ -350,6 +333,17 @@ export class Chart extends BaseComponent {
       this.#y = this.#yLabel.value;
       this.#drawChart();
     });
+  }
+
+  #getGroupedData() {
+    return this.#chartData.chartData.reduce((acc, item) => {
+      const key = item.data[this.#x];
+      if (!acc[key]) {
+        acc[key] = 0;
+      }
+      acc[key] += item.data[this.#y];
+      return acc;
+    }, {});
   }
 }
 

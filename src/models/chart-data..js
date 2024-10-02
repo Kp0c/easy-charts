@@ -39,6 +39,11 @@ export class ChartData {
     this.#convertRawDataToChartData(data);
   }
 
+  fixData() {
+    this.errors = [];
+    this.chartData = this.chartData.filter(item => item.isValid);
+  }
+
   /**
    * Converts raw data to chart data
    * @param {object[]} data raw key-value pairs
