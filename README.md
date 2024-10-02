@@ -37,6 +37,7 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
 - Preview data in the table format
 - Generate Bar/Line/Pie Charts
 - Export as PNG/SVG
+- Print chart
 
 ## How to run
 1. Clone the repo

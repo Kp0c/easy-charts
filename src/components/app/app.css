@@ -6,3 +6,9 @@
   gap: 1rem;
   padding: 1rem;
 }
+
+@media print {
+  ec-header, #upload, #preview, #generate {
+    display: none;
+  }
+}

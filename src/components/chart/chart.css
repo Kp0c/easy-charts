@@ -1,2 +1,11 @@
 @import '../../styles/common.css';
 
+@media print {
+  * {
+    display: none;
+  }
+
+  .chart {
+    display: block;
+  }
+}
