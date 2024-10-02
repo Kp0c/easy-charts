@@ -11,13 +11,18 @@ For tests it is using [Vitest](https://vitest.dev/) that is using [WebdriverIO](
 
 ## Project structure
 - `components` - Project is using component-based approach with custom elements. Components are using `ec-` prefix that means "easy charts."
-    - The `ec-app` component is the main component containing the whole app, routing logic and app state.
+    - The `ec-app` component is the main component containing the whole app, and manages the data.
     - The `ec-header` component for the header
     - The `ec-upload` component for the upload section. It parses all files into an object array.
     - The `ec-alerts` component for the alerts section
+    - The `ec-data-preview` component to preview data
+    - The `ec-data-errors` component to preview data errors
   - `base-component.js` - Base component that is used as a base for all components
 - `helpers` - Helper classes
     - `observable` - Observable implementation to add reactivity to the app
+    - `files.helper` - Functions that are helping to work with files
+- `models` - Models
+    - `chart-data` - Chart Data model
 - `services` - Services
     - `alerts.service` - A service to show alerts
 - `styles` - additional styles

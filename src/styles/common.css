@@ -49,3 +49,23 @@ button {
 p {
   margin: 0;
 }
+
+.inline-alert {
+  color: black;
+  padding: 8px;
+
+  &.red {
+    background: #FEECEB;
+    border: 1px solid #F9423A;
+  }
+
+  &.yellow {
+    background: #FFF4E6;
+    border: 1px solid #FF9900;
+  }
+
+  &.green {
+    background: #E6F2EF;
+    border: 1px solid #007B5F;
+  }
+}

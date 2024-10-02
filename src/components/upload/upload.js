@@ -3,6 +3,7 @@ import styles from './upload.css?inline'
 import { BaseComponent } from '../base-component.js';
 import { read, utils } from 'xlsx';
 import { showError } from '../../services/alerts.service.js';
+import { FilesHelper } from '../../helpers/files.helper.js';
 
 export class Upload extends BaseComponent {
   constructor() {
@@ -54,10 +55,10 @@ export class Upload extends BaseComponent {
     submitButton.addEventListener('click', () => {
       const manualData = this.shadowRoot.getElementById('manual-data').value;
 
-      if (this.#isJson(manualData)) {
+      if (FilesHelper.isJson(manualData)) {
         this.#submitData(JSON.parse(manualData));
-      } else if (this.#isCsv(manualData)) {
-        this.#submitData(manualData);
+      } else if (FilesHelper.isCsv(manualData)) {
+        this.#submitData(FilesHelper.parseCsv(manualData));
       } else {
         showError('Unable to parse manual data');
       }
@@ -65,6 +66,50 @@ export class Upload extends BaseComponent {
     }, {
       signal: this.destroyedSignal
     });
+
+    // TODO: delete
+    this.shadowRoot.getElementById('manual-data').value = `[
+    {
+        "Year": 2018,
+        "Diplomatic Missions": 90,
+        "International Agreements": 120,
+        "Foreign Visits by Officials": 60,
+        "Foreign Delegations to Ukraine": 50,
+        "Trade Agreements Signed": 15
+    },
+    {
+        "Year": 2019,
+        "Diplomatic Missions": 95,
+        "International Agreements": 125,
+        "Foreign Visits by Officials": 75,
+        "Foreign Delegations to Ukraine": 65,
+        "Trade Agreements Signed": 20
+    },
+    {
+        "Year": 2020,
+        "Diplomatic Missions": 98,
+        "International Agreements": 130,
+        "Foreign Visits by Officials": 55,
+        "Foreign Delegations to Ukraine": 45,
+        "Trade Agreements Signed": 22
+    },
+    {
+        "Year": 2021,
+        "Diplomatic Missions": 100,
+        "International Agreements": 140,
+        "Foreign Visits by Officials": 40,
+        "Foreign Delegations to Ukraine": 30,
+        "Trade Agreements Signed": 25
+    },
+    {
+        "Year": 2022,
+        "Diplomatic Missions": 105,
+        "International Agreements": 145,
+        "Foreign Visits by Officials": 35,
+        "Foreign Delegations to Ukraine": 20,
+        "Trade Agreements Signed": 30
+    }
+]`;
   }
 
   #handleFile(file) {
@@ -90,7 +135,7 @@ export class Upload extends BaseComponent {
     reader.onload = (event) => {
       const data = event.target.result;
 
-      if (this.#isJson(data)) {
+      if (FilesHelper.isJson(data)) {
         this.#submitData(JSON.parse(data));
       } else {
         showError('Unable to parse JSON');
@@ -105,8 +150,8 @@ export class Upload extends BaseComponent {
     reader.onload = (event) => {
       const data = event.target.result;
 
-      if (this.#isCsv(data)) {
-        this.#submitData(this.#parseCsv(data));
+      if (FilesHelper.isCsv(data)) {
+        this.#submitData(FilesHelper.parseCsv(data));
       } else {
         showError('Unable to parse CSV');
       }
@@ -114,24 +159,6 @@ export class Upload extends BaseComponent {
 
     reader.readAsText(file);
   }
-
-  #parseCsv(string) {
-    //csv to json
-    const lines = string.split('\n');
-    const result = [];
-    const headers = lines[0].split(',');
-    for (let i = 1; i < lines.length; i++) {
-      const obj = {};
-      const currentline = lines[i].split(',');
-      for (let j = 0; j < headers.length; j++) {
-        obj[headers[j]] = currentline[j];
-      }
-      result.push(obj);
-    }
-
-    return result;
-  }
-
 
   #handleXslx(file) {
     const reader = new FileReader();
@@ -151,43 +178,9 @@ export class Upload extends BaseComponent {
   }
 
   #submitData(data) {
-    console.log(data);
-  }
-
-  #isJson(str) {
-    try {
-      JSON.parse(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
-
-  #isCsv(str) {
-    const delimiter = ',';
-
-    // Split the text into lines
-    const lines = str.split(/\r\n|\n|\r/);
-
-    // If there's only one line, it's unlikely to be CSV
-    if (lines.length < 2) {
-      return false;
-    }
-
-    // Split the first line to get the number of columns
-    const firstLineColumns = lines[0].split(delimiter).length;
-
-    // Check each subsequent line to see if it has the same number of columns
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim() !== "") {
-        const columns = lines[i].split(delimiter).length;
-        if (columns !== firstLineColumns) {
-          return false; // Inconsistent number of columns
-        }
-      }
-    }
-
-    return true;
+    this.dispatchEvent(new CustomEvent('data', {
+      detail: data
+    }));
   }
 }
 
