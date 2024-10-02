@@ -66,50 +66,6 @@ export class Upload extends BaseComponent {
     }, {
       signal: this.destroyedSignal
     });
-
-    // TODO: delete
-    this.shadowRoot.getElementById('manual-data').value = `[
-    {
-        "Year": 2018,
-        "Diplomatic Missions": 90,
-        "International Agreements": 120,
-        "Foreign Visits by Officials": 60,
-        "Foreign Delegations to Ukraine": 50,
-        "Trade Agreements Signed": 15
-    },
-    {
-        "Year": 2019,
-        "Diplomatic Missions": 95,
-        "International Agreements": 125,
-        "Foreign Visits by Officials": 75,
-        "Foreign Delegations to Ukraine": 65,
-        "Trade Agreements Signed": 20
-    },
-    {
-        "Year": 2020,
-        "Diplomatic Missions": 98,
-        "International Agreements": 130,
-        "Foreign Visits by Officials": 55,
-        "Foreign Delegations to Ukraine": 45,
-        "Trade Agreements Signed": 22
-    },
-    {
-        "Year": 2021,
-        "Diplomatic Missions": 100,
-        "International Agreements": 140,
-        "Foreign Visits by Officials": 40,
-        "Foreign Delegations to Ukraine": 30,
-        "Trade Agreements Signed": 25
-    },
-    {
-        "Year": 2022,
-        "Diplomatic Missions": 105,
-        "International Agreements": 145,
-        "Foreign Visits by Officials": 35,
-        "Foreign Delegations to Ukraine": 20,
-        "Trade Agreements Signed": 30
-    }
-]`;
   }
 
   #handleFile(file) {
@@ -178,6 +134,11 @@ export class Upload extends BaseComponent {
   }
 
   #submitData(data) {
+    if (!data.length) {
+      showError('No data found');
+      return
+    }
+
     this.dispatchEvent(new CustomEvent('data', {
       detail: data
     }));
